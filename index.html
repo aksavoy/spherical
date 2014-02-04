@@ -1,0 +1,54 @@
+<!--
+/* Ayse Kalkan-Savoy, Feb, 4, 2014
+/*
+/* Uses the functions in cloud.js and XTK library calls from xtk_edge.js.
+/* Input: This application accepts a raw data file with four columns: x,y,z,m
+/* (x,y,z) is the center coordinates of a spherical object, and m is its
+/* mass. The full data represents particles/nodes in a cloud.
+/* Output: Computes the centroid of the cloud, average cost and average deviation.
+/* Each row of data is visualized as a sphere with the centers at the given
+/* coordinates. However, the coordinates are scaled. The space coordinates
+/* at all times are between 0 and 100. The radius of a sphere uses a ratio
+/* with its mass, and density of each sphere is assumed to be the same.
+/* 5 colors are used for spheres. Each color represents a range of weight.
+/* The black sphere is the centroid of the cloud and its size is defined by
+/* averaging the total weights.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<title>Centroid Project</title>
+<script type="text/javascript" src="http://get.goXTK.com/xtk_edge.js"></script>
+<script type="text/javascript" src="cloud.js"></script>
+<link rel="stylesheet" type="text/css" href="file.css">
+</head>
+
+<body>
+<div>
+<h1>Centroid of a Cloud of Spheres...</h1>
+<font size="4">
+Please select or drop a data file.   <br>
+<input type="file" id="files" name="files" size="200"/>
+<div id="drop_zone" style="background-color:beige; position:absolute;top:80px;
+left:300px;height:130px;width:200px">FILE DROP:</div><br><br>
+<output id="filename"></output><br>
+<output id="data1"></output><br>
+<output id="data2"></output><br>
+<output id="data3"></output><br>
+</font>
+<output id="Cinfo"></output><br><br>
+</div>
+<script>
+  if (window.File && window.FileReader && window.FileList && window.Blob) {
+  	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	var dropZone = document.getElementById('drop_zone');
+	dropZone.addEventListener('dragover', handleDragOver, false);
+	dropZone.addEventListener('drop', handleFileSelect, false);
+  } else {
+  	alert('The File APIs are not fully supported in this browser.');
+  }
+</script>
+<div id='pict' style="position:absolute;height:400px;width:1000px;" ></div>
+</body>
+
+</html>
