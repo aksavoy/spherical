@@ -1,0 +1,1 @@
+This application finds the centroid of a cloud of spheres. The centroid point is visualized as a black sphere in the center of the display. The input file is in the form of raw data, and can be browsed or dropped in the file drop area. 
