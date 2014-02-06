@@ -91,6 +91,7 @@
     var devy = 0;
     var devz = 0;
     var max = 0;
+    var max_w = 0;
     
     for (var i = 0; i < N; i++)
     {
@@ -102,6 +103,9 @@
       // which should be good enough doe estimating magnitude.
       if (data_arr[i][0] > max) {
         max = data_arr[i][0];
+      }
+      if (data_arr[i][3] > max_w) {
+        max_w = data_arr[i][3];
       }
     }
 
@@ -141,15 +145,21 @@
     // Scaled dimensions are between 0-100
     // Scale the data ... 
     var sFactor = Math.round(100.0/max);
+    // Scale the weight for visualization
+    var sFactor_w = Math.round(5.0/max_w);
+    
     for (var i=0; i< N; i++)
     {
         for (var j=0;j<3; j++)
             data_arr[i][j] *= sFactor
+            
+        data_arr[i][3] *= sFactor_w;
     }
+
     result_arr[0][0] = centrx*sFactor;
     result_arr[0][1] = centry*sFactor;
     result_arr[0][2] = centrz*sFactor;
-    result_arr[0][3] = total_mass/N;
+    result_arr[0][3] = total_mass*sFactor_w/N;
     result_arr[1][0] = costx;
     result_arr[1][1] = costy;
     result_arr[1][2] = costz;
@@ -171,6 +181,7 @@
   var red = [1,0,0];
   var lblue = [0,1,1];
   var black = [0,0,0];
+  var yellow = [1,1,0];
   var colors = [green,red,magenta,lblue,blue];
   var div = document.getElementById("pict");
   div.innerHTML = ""
@@ -180,24 +191,45 @@
   r.container = div;
   r.init();
   
+  var sphere_centroid = new X.sphere;
+  sphere_centroid.radius = result_arr[0][3]*1.5;
+  sphere_centroid.color = black;
+  sphere_centroid.center = [0,0,0];//[result_arr[0][0],result_arr[0][1],result_arr[0][2]];
+  r.add(sphere_centroid);
+  var p = new X.mesh();
+  p.color = yellow;
+  p.opacity = 0.5;
   for (var i = 0; i < N; i++)
   {
     var sphere = new X.sphere();
+    var cylinder = new X.cylinder();
+    sphere.opacity = 0.8;
     // To represent the size according the weight
     // weight is directly used to define radius.
-    sphere.radius = data_arr[i][3]*2;
+    sphere.radius = data_arr[i][3]*1.5;
     var indx = Math.round(data_arr[i][3]) % 5;
     sphere.color = colors[4-indx];
-    
-    sphere.center = [data_arr[i][0],data_arr[0][1],data_arr[i][2]];
+    var x = data_arr[i][0] - result_arr[0][0];
+    var y = data_arr[i][1] - result_arr[0][1];
+    var z = data_arr[i][2] - result_arr[0][2];
+    sphere.transform.translateX(x);
+    sphere.transform.translateY(y);
+    sphere.transform.translateZ(z);
+    p.points = [x,y,x];
+    cylinder.start = [0, 0, 0];
+    cylinder.end = [x, y, z];
+    cylinder.radius = 0.2;
     r.add(sphere);
+    r.add(cylinder);
   }
-  var sphere_centroid = new X.sphere;
-  sphere_centroid.radius = result_arr[0][3]*2;
-  sphere_centroid.color = black;
-  sphere_centroid.center = [result_arr[0][0],result_arr[0][1],result_arr[0][2]];
-  r.add(sphere_centroid);
+
   r.render();
+  r.onRender = function() {
+
+    // rotate the camera in X-direction
+    r.camera.rotate([1, 0]);
+    
+  };
 }
 
 
